@@ -1,20 +1,23 @@
 """
 Entry point for Streamlit Cloud.
-Adds the utils/ directory to sys.path so that existing imports
-(ai_service, core, db) resolve correctly, then runs the main app.
+Adds utils/ to sys.path and re-executes utils/app.py in-process
+so that all Streamlit widget calls are captured.
 """
 import sys
 import os
-import runpy
 from pathlib import Path
 
-# Add utils/ to the Python path so imports work as before
 _utils = str(Path(__file__).resolve().parent / "utils")
+
+# 1. Put utils/ on the import path so ai_service, core, db resolve
 if _utils not in sys.path:
     sys.path.insert(0, _utils)
 
-# Set CWD to utils/ so relative paths (DB, .env) resolve correctly
+# 2. CWD → utils/ so relative file paths (DB) work
 os.chdir(_utils)
 
-# Run utils/app.py as __main__ so all top-level st.* calls execute
-runpy.run_path(os.path.join(_utils, "app.py"), run_name="__main__")
+# 3. Read and exec the real app in *this* module's namespace
+#    (Streamlit only renders widgets from the main script's execution)
+_app_path = os.path.join(_utils, "app.py")
+with open(_app_path) as _f:
+    exec(compile(_f.read(), _app_path, "exec"))
