@@ -1,8 +1,16 @@
 import html as _html
 import json as _json
 import os as _os
+import sys as _sys
 import streamlit as st
 from datetime import date, datetime
+from pathlib import Path as _Path
+
+# Ensure utils/ is on sys.path and CWD so sibling imports + DB path work
+_this_dir = str(_Path(__file__).resolve().parent)
+if _this_dir not in _sys.path:
+    _sys.path.insert(0, _this_dir)
+_os.chdir(_this_dir)
 
 from ai_service import (
     run_for_you_pipeline,
