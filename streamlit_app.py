@@ -5,6 +5,7 @@ Adds the utils/ directory to sys.path so that existing imports
 """
 import sys
 import os
+import runpy
 from pathlib import Path
 
 # Add utils/ to the Python path so imports work as before
@@ -15,5 +16,5 @@ if _utils not in sys.path:
 # Set CWD to utils/ so relative paths (DB, .env) resolve correctly
 os.chdir(_utils)
 
-# Streamlit executes top-level code on import — this triggers the full app
-import app as _main_app  # noqa: F401
+# Run utils/app.py as __main__ so all top-level st.* calls execute
+runpy.run_path(os.path.join(_utils, "app.py"), run_name="__main__")
