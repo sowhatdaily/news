@@ -1,0 +1,28 @@
+# Secrets
+.env
+*.env
+.streamlit/secrets.toml
+
+# Database
+*.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual env
+env_iim/
+venv/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Copies / backups
+utils copy/
