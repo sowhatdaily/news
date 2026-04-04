@@ -19,9 +19,24 @@ def _get_secret(key, default=""):
 
 
 EXA_API_KEY = _get_secret("EXA_API_KEY")
-OPENAI_API_KEY = _get_secret("OPENAI_API_KEY", "b0d3c77760b9417f9519d62464d6b6e5")
-OPENAI_API_BASE = _get_secret("OPENAI_API_BASE", "https://demo-openai-foundit.openai.azure.com/openai/v1/")
+OPENAI_API_KEY = _get_secret("OPENAI_API_KEY")
+OPENAI_API_BASE = _get_secret("OPENAI_API_BASE", "https://api.openai.com/v1")
 OPENAI_MODEL = _get_secret("OPENAI_MODEL", "gpt-4o")
 
-exa_client = Exa(api_key=EXA_API_KEY)
-openai_client = OpenAI(api_key=OPENAI_API_KEY, base_url=OPENAI_API_BASE)
+# Initialize clients with error checking
+exa_client = None
+openai_client = None
+
+if EXA_API_KEY:
+    try:
+        exa_client = Exa(api_key=EXA_API_KEY)
+    except Exception as e:
+        print(f"Warning: Failed to initialize Exa client: {e}")
+
+if OPENAI_API_KEY:
+    try:
+        openai_client = OpenAI(api_key=OPENAI_API_KEY, base_url=OPENAI_API_BASE)
+    except Exception as e:
+        print(f"Warning: Failed to initialize OpenAI client: {e}")
+else:
+    print("Warning: OPENAI_API_KEY not configured")

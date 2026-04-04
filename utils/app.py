@@ -50,8 +50,17 @@ from db import (
     update_password,
 )
 
+from ai_service.client import exa_client, openai_client
+
 init_db()
 cleanup_expired_sessions()
+
+# Check if required API clients are initialized
+_missing_config = []
+if not openai_client:
+    _missing_config.append("OPENAI_API_KEY")
+if not exa_client:
+    _missing_config.append("EXA_API_KEY")
 
 # ---------- Persistent Login (45 days) ----------
 # Tokens are stored in the browser URL via st.query_params (per-browser-tab,
@@ -1531,6 +1540,29 @@ def render_home(user):
 
 
 # ---------- Router ----------
+# Check for missing configuration
+if _missing_config:
+    st.error(f"❌ Configuration Error - Missing API Keys: {', '.join(_missing_config)}")
+    st.markdown("""
+    ### How to Fix
+    
+    1. Go to your Streamlit app settings on [share.streamlit.io](https://share.streamlit.io)
+    2. Click **"Secrets"** in the sidebar
+    3. Add these secrets:
+    
+    ```
+    OPENAI_API_KEY = "your-key-here"
+    EXA_API_KEY = "your-key-here"
+    ```
+    
+    4. Reboot the app
+    
+    **Get API Keys:**
+    - [OpenAI](https://platform.openai.com/api-keys)
+    - [Exa](https://dashboard.exa.ai)
+    """)
+    st.stop()
+
 # Auto-login from persisted session token (45-day remember me)
 if st.session_state.auth_user is None:
     saved_token = _load_session_token()
